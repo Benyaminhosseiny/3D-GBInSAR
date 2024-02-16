@@ -1,7 +1,9 @@
-% * * * By Benyamin Hosseiny (c) * * *
-%   * Latest Update: 2022-05-12 *
-%   * Investigating the 3D displacement results
-%   * NOTE that this is the modified version of 'Target_Interference.m'
+% Citation:
+% Hosseiny, Benyamin, Jalal Amini, and Hossein Aghababaei. "Structural displacement 
+% monitoring using ground-based synthetic aperture radar." International Journal of 
+% Applied Earth Observation and Geoinformation (JAG) 116 (2023): 103144.
+% https://doi.org/10.1016/j.jag.2022.103144
+
 warning('off','all')
 clear; clc; close all
 addpath('./my functions')
@@ -885,7 +887,7 @@ end
 %% FUNCTIONS
 %%
 function signal_TS = signal_model_TS(Amp, Ts, fs, lambda, bw, R_tar, snr)
-% [1] A_2017_Static clutter elimination for frequency�?modulated continuous�?wave radar displacement
+% [1] A_2017_Static clutter elimination for frequencyâ?modulated continuousâ?wave radar displacement
 % [2] A_2019_An Effective Accuracy Evaluation Method for LFMCW Radar Displacement Monitoring with Phasor Statistical Analysis
 
 % Amp   : Signal amplitude
