@@ -1,5 +1,35 @@
 # 3D-GBInSAR
 
+This repository demonstrates how to retrieve 3D displacement vector by interferometric processing of time-series observations of ground-based SAR (GBSASR) system.
+## Usage
+First, run "threeD_dsplcmnt_Part1_rawdata.m" to generate the simulated data.
+Then, run "threeD_dsplcmnt_Part2_processing_Sim.m" to process the data and estimate the 3D displacement vectors through the time!
+Moreover, if you want to see the algorithm's performance on a simulated beautifl bridge, run "threeD_dsplcmnt_BridgeSimulation.m"!
+
+## Results
+Here are the results you can obtain by running the codes.
+
+In this example, two point scatterers are simulated: One is fixed and another one is moving!
+<p align="center">
+ <img src="results/TargetGeometry.jpg" width=50%>
+</p>
+
+Note that in order to resolve the displacement vector in a 3D space first we need to acquire data with both horizontal and vertical baselines!
+<p align="center">
+ <img src="results/AntennaGeometry.jpg" width=50%>
+</p>
+
+In order to easier demonstration of 3D objects I simply convert them into point clouds, while ignoring the unstable scatterers (belonging to background).
+<p align="center">
+ <img src="results/PointCloud.jpg" width=70%>
+</p>
+
+Finally! Here is the estimated displacements in 3D space for the fix and moving scatterers!
+<p align="center">
+ <img src="results/DisplacementVectors.jpg" width=70%>
+</p>
+
+
 ## Paper
 Link to the paper: 
 
