@@ -6,15 +6,16 @@
 
 warning('off','all')
 clear; clc; close all
-addpath('./my functions')
+addpath('./src')
+
 c = physconst('LightSpeed');
 
 fontsizefig = 14; fontname = 'times'; % Set it to times
 set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',fontsizefig);
 
-aux_figs_flag = 0;
-export_flag = 0;
-export_directory = 'D:\Surveying\Papers\2022 - mmWave TI MIMO for SHM\results\threeD_Displacement\';
+aux_figs_flag = 1;
+export_flag = 1;
+export_directory = '\3D-GBInSAR\results\';
 export_directory = [export_directory,datestr(now,'yyyymmdd_HHMM'),'\'];
 if export_flag
     mkdir(export_directory)
@@ -73,7 +74,7 @@ SysSpec.z_n  =  z_sensor;
 %% 4- Antenna Elevation and Horizontal patterns
 % pat_az = xlsread('D:\Surveying\Papers\2022 - mmWave TI MIMO for SHM-JAG\H-plane pattern.xlsx');
 % pat_az = interp1( pat_az(:,1),pat_az(:,2),-90:0.1:90,'spline' );
-% 
+% phase
 % pat_el = xlsread('D:\Surveying\Papers\2022 - mmWave TI MIMO for SHM-JAG\E-plane pattern.xlsx');
 % pat_el = interp1( pat_el(:,1),pat_el(:,2),-90:0.1:90,'spline' );
 
@@ -338,9 +339,9 @@ end
 Loc_PS = [ps_r, ps_c];
 rcs_clutter = rcs_clutter-rcs_PS;
 scr_PS = 10*log10( abs(rcs_PS)./abs(rcs_clutter) );
-if aux_figs_flag
-    figure; plot( 1:num_PS,10*log10(abs(rcs_PS)) ); hold on; plot( 1:num_PS,scr_PS ); legend('RCS','SCR')
-end
+% if aux_figs_flag
+%     figure; plot( 1:num_PS,10*log10(abs(rcs_PS)) ); hold on; plot( 1:num_PS,scr_PS ); legend('RCS','SCR')
+% end
 
 scr_thresh = 15; %dB
 high_scr_idx = find( scr_PS>scr_thresh ); % Keeping PS point with SCR>5 dB
@@ -485,80 +486,74 @@ rmse_angle_d_vec_dif = sqrt(mean(error_angle_d_vec_dif.^2,2)); % epochs x 1
     slc2 = squeeze(slc_ts(2,:,:));
     cbar_min = 0;
     cbar_max = 10*log10(max(max(abs(slc1))));
-if aux_figs_flag
-    %% 0- General overview of scene simulations
-    figure;set(gca,'YDir','normal')
-    
-    ax1 = subplot(4,8,[1:4]);   imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(10*log10(abs(slc1))), [ cbar_min, cbar_max ] ); 
-    ax = gca;ax.YDir= 'normal'; axis('equal'); title('slc-abs (dB)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-    ax2 = subplot(4,8,[9:12]);  imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(angle(slc1)));axis('equal'); title('slc-angle');
-    ax = gca;ax.YDir= 'normal'; xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-    ax3 = subplot(4,8,[17:20]); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapping_operator(angle(slc1)-angle(slc2))*lambda/4/pi) );
-    ax = gca;ax.YDir= 'normal';axis('equal'); title('LOS displacement map (mm)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-    
-    linkaxes([ax1, ax2, ax3]);
-    subplot(4,8,[5,6]);   hist( angle(slc1(:)),5000 );         title('Phase distribution (Rad)')
-    subplot(4,8,[7,8]);   hist( 10*log10(abs(slc1(:))),5000 ); title('Amplitude distribution (dB)')
-    subplot(4,8,[13,14]); hist( real(slc1(:)),50000 );         title('Real distribution')
-    subplot(4,8,[15,16]); hist( imag(slc1(:)),50000 );         title('Imaginary distribution')
-    subplot(4,8,[25:28]); imagesc([-tar_BG_X/2 tar_BG_X/2],[0 tar_BG_Z],flipud(RQ_idx));
-    ax = gca;ax.YDir= 'normal';axis('equal'); colormap('jet');title('iso-range contours');xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-    subplot(4,8,[23,24,31,32]);
-    scatter3( x1(:),y1(:),z1(:),'filled','k')
-    hold on
-    scatter3( x_sensor(:),y_sensor*x_sensor(:),z_sensor(:), 30,'filled')
-    lgd=legend('Scene area', 'Sensor steps'); %axis equal
-    lgd.Location = 'southoutside';
-    title('Scene geometry'); xlabel('Cross-range (x)'); ylabel('Range (y)');zlabel('Elevation (z)');
-    
-    subplot(4,8,[21,22,29,30]); %plot( [0,real(tt)], [0,imag(tt)] );%axis('equal')
-    hold on
-    
-    for ii = 1:size(row_t,1)
-        if ii==1
-            plot( [0, real( slc1(row_t(ii),col_t(ii)) )], [0,imag( slc1(row_t(ii),col_t(ii)) )] )
-            base_real=0; base_imag=0;
-        else
-            base_real=base_real+real( slc1(row_t(ii-1),col_t(ii-1)) );
-            base_imag=base_imag+imag( slc1(row_t(ii-1),col_t(ii-1)) );
-            plot( [base_real, base_real+real( slc1(row_t(ii),col_t(ii)) )], [base_imag,base_imag+imag( slc1(row_t(ii),col_t(ii)) )] )
-        end
-    end
-    title("Targets' interference for CR's pixel")
-    xlabel('Real'); ylabel('Imaginary')
-end
+% % % if aux_figs_flag
+% % %     %% 0- General overview of scene simulations
+% % %     figure;set(gca,'YDir','normal')
+% % %     
+% % %     ax1 = subplot(4,8,[1:4]);   imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(10*log10(abs(slc1))), [ cbar_min, cbar_max ] ); 
+% % %     ax = gca;ax.YDir= 'normal'; axis('equal'); title('slc-abs (dB)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
+% % %     ax2 = subplot(4,8,[9:12]);  imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(angle(slc1)));axis('equal'); title('slc-angle');
+% % %     ax = gca;ax.YDir= 'normal'; xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
+% % %     ax3 = subplot(4,8,[17:20]); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapping_operator(angle(slc1)-angle(slc2))*lambda/4/pi) );
+% % %     ax = gca;ax.YDir= 'normal';axis('equal'); title('LOS displacement map (mm)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
+% % %     
+% % %     linkaxes([ax1, ax2, ax3]);
+% % %     subplot(4,8,[5,6]);   hist( angle(slc1(:)),5000 );         title('Phase distribution (Rad)')
+% % %     subplot(4,8,[7,8]);   hist( 10*log10(abs(slc1(:))),5000 ); title('Amplitude distribution (dB)')
+% % %     subplot(4,8,[13,14]); hist( real(slc1(:)),50000 );         title('Real distribution')
+% % %     subplot(4,8,[15,16]); hist( imag(slc1(:)),50000 );         title('Imaginary distribution')
+% % %     subplot(4,8,[25:28]); imagesc([-tar_BG_X/2 tar_BG_X/2],[0 tar_BG_Z],flipud(RQ_idx));
+% % %     ax = gca;ax.YDir= 'normal';axis('equal'); colormap('jet');title('iso-range contours');xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
+% % %     subplot(4,8,[23,24,31,32]);
+% % %     scatter3( x1(:),y1(:),z1(:),'filled','k')
+% % %     hold on
+% % %     scatter3( x_sensor(:),y_sensor*x_sensor(:),z_sensor(:), 30,'filled')
+% % %     lgd=legend('Scene area', 'Sensor steps'); %axis equal
+% % %     lgd.Location = 'southoutside';
+% % %     title('Scene geometry'); xlabel('Cross-range (x)'); ylabel('Range (y)');zlabel('Elevation (z)');
+% % %     
+% % %     subplot(4,8,[21,22,29,30]); %plot( [0,real(tt)], [0,imag(tt)] );%axis('equal')
+% % %     hold on
+% % %     
+% % %     for ii = 1:size(row_t,1)
+% % %         if ii==1
+% % %             plot( [0, real( slc1(row_t(ii),col_t(ii)) )], [0,imag( slc1(row_t(ii),col_t(ii)) )] )
+% % %             base_real=0; base_imag=0;
+% % %         else
+% % %             base_real=base_real+real( slc1(row_t(ii-1),col_t(ii-1)) );
+% % %             base_imag=base_imag+imag( slc1(row_t(ii-1),col_t(ii-1)) );
+% % %             plot( [base_real, base_real+real( slc1(row_t(ii),col_t(ii)) )], [base_imag,base_imag+imag( slc1(row_t(ii),col_t(ii)) )] )
+% % %         end
+% % %     end
+% % %     title("Targets' interference for CR's pixel")
+% % %     xlabel('Real'); ylabel('Imaginary')
+% % % end
 
 %% Figure 1- Simulated slc
 xfig        = 0;   % Screen position
 yfig        = 0;   % Screen position
-% widthfig  = 1000; % Width of figure
-% heightfig = 1000; % Height of figure (by default in pixels)
 fontsizefig = 14; fontname    = 'times'; % Set it to times
-widthfig  = 1200; % Width of figure
-heightfig = 1200; % Height of figure (by default in pixels)
 set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);set(gca,'YDir','normal')
 
+figure('Position', [xfig yfig 1700 1000]);set(gca,'YDir','normal')
 sgtitle('Simulations')
 ax1 = subplot(2,2,1); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(10*log10(abs(slc1))), [ cbar_min, cbar_max ] );
 ax = gca;ax.YDir= 'normal'; axis('tight'); axis('equal'); title('slc-abs (dB)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
 ax2 = subplot(2,2,2); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(angle(slc1)));
 axis('tight');axis('equal'); title('slc-angle'); ax = gca;ax.YDir= 'normal'; xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-ax3 = subplot(2,2,3); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapping_operator(angle(slc1)-angle(slc2))*lambda/4/pi) );
+ax3 = subplot(2,2,3); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapToPi(angle(slc1)-angle(slc2))*lambda/4/pi) );
 ax = gca;ax.YDir= 'normal'; axis('tight');axis('equal'); title('LOS displacement map (mm)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
 % subplot(2,2,4); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(RQ_idx));
 subplot(2,2,4); RQ_idx(RQ_idx==0)=NaN;contourf(flipud(RQ_idx),max(max(RQ_idx)));
-ax = gca;ax.YDir= 'normal'; axis('tight');axis('equal'); colormap('jet'); title('iso-range contours');xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
+colormap('jet'); title('iso-range contours');xlabel('Azimuth (x)'); ylabel('Elevation (z)'); ax = gca;ax.YDir= 'normal'; % axis('auto');  %colorbar()
 if export_flag
    print(gcf,[export_directory 'SLC simulations.jpg'],'-djpeg','-r600'); 
 end
+   print(gcf,[export_directory 'Scene simulation process.jpg'],'-djpeg','-r600'); 
 
 %% Figure 2- Histogram
 % % % Displacement vectors
-widthfig  = 1200; % Width of figure
-heightfig = 1200; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1200 1200]);
 sgtitle('Histograms of displacement errors')
 
 xlim_hist_max = []; xlim_hist_min = [];
@@ -613,10 +608,7 @@ if export_flag
    print(gcf,[export_directory 'Histograms of displacement errors for each TS.jpg'],'-djpeg','-r600'); 
 end
 %% Figure 3 
-widthfig  = 1200; % Width of figure
-heightfig = 1200; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1200 1200]);
 sgtitle('displacement errors in TS')
 xax = linspace(1,epochs,epochs);
 subplot(3,2,1); plot(1000*rmse_vec_dif(1,:),'ko-','MarkerFaceColor','k','MarkerEdgeColor','k','LineWidth',2,'MarkerSize',5);xticks(xax)
@@ -634,11 +626,7 @@ if export_flag
 end
 
 %% Figure 4
-% % % Displacement vectors
-widthfig  = 1200; % Width of figure
-heightfig = 1200; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1200 1200]);
 sgtitle('Histograms of displacement errors (all samples together)')
 subplot(3,2,1)
 hist1 = histogram( 1000*error_d_hat_3D_cartesian_dif(:,:,1), round(num_PS/.1),'EdgeColor', [0.53,0.81,1], 'FaceColor', [0.53,0.81,1], 'FaceAlpha', 1, 'LineWidth',2 );title('X error distribution (mm)');
@@ -666,11 +654,7 @@ if export_flag
 end
 
 %% Figure 5
-% % % Displacement vectors
-widthfig  = 1200; % Width of figure
-heightfig = 1200; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1200 1200]);
 sgtitle('Histograms of cumulative displacement errors')
 subplot(3,2,1)
 hist1 = histogram( 1000*error_d_hat_3D_cartesian_total(:,1),    round(num_PS/.1),'EdgeColor', [0.53,0.81,1], 'FaceColor', [0.53,0.81,1], 'FaceAlpha', 1, 'LineWidth',1 );title('X error distribution (mm)')
@@ -701,10 +685,7 @@ if export_flag
 end
 
 %% Figure 6-8 - Time series displacements
-% widthfig  = 1200; % Width of figure
-% heightfig = 1200; % Height of figure (by default in pixels)
-% set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname);
-% figure('Position', [xfig yfig widthfig heightfig]);
+% figure('Position', [0 0 1200 1200]);
 % sgtitle('Time series displacements')
 % ax_ts = 1:1:epochs;
 % ax_ts2 = [ax_ts,fliplr(ax_ts)];
@@ -720,10 +701,7 @@ end
 
 XYZ = ['X','Y','Z'];
 for xyz = 1:3
-    widthfig  = 1200; % Width of figure
-    heightfig = 1300; % Height of figure (by default in pixels)
-    set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname);
-    figure('Position', [xfig yfig widthfig heightfig]);
+    figure('Position', [0 0 1200 1300]);
     sgtitle(['Time series displacements in ', XYZ(xyz)])
     ax_ts = 1:1:epochs;
     ax_ts2 = [ax_ts,fliplr(ax_ts)];
@@ -749,17 +727,12 @@ for xyz = 1:3
 end
 
 %% Figure 9- Abstract plot (Only for the method 2:Cartesian)
-widthfig  = 1700; % Width of figure
-heightfig = 1000; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1700 1000]);
 sgtitle('Cumulative TS results')
-
 lim = 1.2*max(max(1000*abs(error_d_hat_3D_cartesian_total)));
 subplot(2,2,1);bar(categorical({'x','y','z','abs'}),1000*[rmse_vec_total; rmse_abs_defo_error_total],0.4,'k'); ylim([-lim lim]);
 title(['Absolute RMSE: Overall_{(mm)}=',num2str(1000*rmse_abs_defo_error_total)]);xlabel('direction');ylabel('displacement (mm)');set(gca,'Fontsize',fontsizefig)
 % %
-
 subplot(2,2,2);
 fimplicit( @(x,y) x.^2 + y.^2 -1, 'k', 'LineWidth',4 ); axis equal; axis('off');xlim([-1.3,1.3]);ylim([-1.3,1.3])
 hold on; plot( [0,0],[0,1], '--k', 'LineWidth',2 ); hold on; plot( [0,0],[0,-1], '--k', 'LineWidth',.8 ); hold on; plot( [-1,1], [0,0],'--k', 'LineWidth',.8 )
@@ -775,7 +748,6 @@ for ii = 1:num_PS
 end
 title( ['Cumulative angle error | RMSE (deg): ', num2str(rmse_angle_d_vec_total)] )
 % %
-
 subplot(2,2,3)
 defo_dsp=quiver3(zeros(size(d_vec_PS_total,1),1),zeros(size(d_vec_PS_total,1),1),zeros(size(d_vec_PS_total,1),1), ...
     1000*d_vec_PS_total(:,1),1000*d_vec_PS_total(:,2),1000*d_vec_PS_total(:,3), 'b','LineWidth',1, 'ShowArrowHead', 'on');
@@ -793,7 +765,6 @@ legend('real cumulative displacement', 'estimated cumulative displacemenet');tit
 xlabel('X (mm)'); ylabel('Y (mm)'); zlabel('Z (mm)')
 set(gca,'Fontsize',fontsizefig)
 % %
-
 subplot(2,2,4);
 error_dsp1=quiver3(zeros(size(d_vec_PS_total,1),1),zeros(size(d_vec_PS_total,1),1),zeros(size(d_vec_PS_total,1),1), ...
     error_d_hat_3D_cartesian_total(:,1),error_d_hat_3D_cartesian_total(:,2),error_d_hat_3D_cartesian_total(:,3), 'r','LineWidth',1, 'ShowArrowHead', 'on');
@@ -809,12 +780,8 @@ if export_flag
 end
 
 %% Figure 10- Error relations (SCR vs errors)
-widthfig  = 1700; % Width of figure
-heightfig = 1000; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1700 1000]);
 sgtitle('Relations between SCR and estimated cumulated displacement errors')
-
 
 for ii = 1:3 %xyz
     subplot(3,2,2*ii-1);
@@ -845,10 +812,7 @@ if export_flag
 end
 
 %% Figure 11- Error relations (RCS vs errors)
-widthfig  = 1700; % Width of figure
-heightfig = 1000; % Height of figure (by default in pixels)
-set(0,'DefaultAxesFontName',fontname,'DefaultTextFontName',fontname,'defaultAxesFontSize',12);
-figure('Position', [xfig yfig widthfig heightfig]);
+figure('Position', [0 0 1700 1000]);
 sgtitle('Relations between RCS and estimated cumulated displacement errors')
 
 for ii = 1:3 %xyz
@@ -880,47 +844,10 @@ if export_flag
 end
 
 
-
 %%-------------------------------------------------------------------------
 %%
 %%
 %% FUNCTIONS
-%%
-function signal_TS = signal_model_TS(Amp, Ts, fs, lambda, bw, R_tar, snr)
-% [1] A_2017_Static clutter elimination for frequencyâ€?modulated continuousâ€?wave radar displacement
-% [2] A_2019_An Effective Accuracy Evaluation Method for LFMCW Radar Displacement Monitoring with Phasor Statistical Analysis
-
-% Amp   : Signal amplitude
-% Ts    : Sweep time (sec)
-% fs    : Sampling frequency
-% lambda: central wavelength
-% bw    : Bandwidth
-% R_tar : Target's nominal range
-% dR    : target's displacement over the time
-% snr   : white noise snr (dB)
-
-% -------------------------------------------------------------------------
-c       = physconst('LightSpeed');
-Nr      = round(Ts*fs);
-t       = linspace(0,Ts,Nr);
-fc      = c/lambda;
-f0      = fc-bw/2;
-lambda0 = c/f0;
-fb_tar  = 2*bw*R_tar/c/Ts;
-
-% for ii  = 1:length(R_tar)
-%     signal_TS0 = 0;
-%     for jj = 1:length(Amp)
-%     signal_TS0 = signal_TS0+Amp(jj)*exp( 1i*(2*pi*fb_tar(ii)*t + 4*pi*R_tar(ii)/lambda0 ) ); % [1] Eq 1
-%     signal_TS(ii,:) = awgn( signal_TS0,snr ); % add Gaussian noise
-%     end
-% end
-
-signal_TS = Amp.*exp(1i*(2*pi*fb_tar*t + 4*pi*R_tar/lambda0) );
-% signal_TS = awgn( Amp*exp(1i*(2*pi*fb_tar*t + 4*pi*R_tar/lambda0) ),snr );
-
-end
-
 %%
 function slc_resampled = resample_slc(slc, sampling, windowing)
 

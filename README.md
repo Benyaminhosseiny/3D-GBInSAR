@@ -7,7 +7,7 @@ First, run "threeD_dsplcmnt_Part1_rawdata.m" to generate the simulated data.
 Then, run "threeD_dsplcmnt_Part2_processing_Sim.m" to process the data and estimate the 3D displacement vectors through the time!
 Moreover, if you want to see the algorithm's performance on a simulated beautifl bridge, run "threeD_dsplcmnt_BridgeSimulation.m"!
 
-## Results
+## Results [Point scatterers]
 Here are the results you can obtain by running the codes.
 
 In this example, two point scatterers are simulated: One is fixed and another one is moving!
@@ -30,7 +30,36 @@ Finally! Here is the estimated displacements in 3D space for the fix and moving 
  <img src="results/DisplacementVectors.jpg" width=70%>
 </p>
 
+## Results [Bridge Simulation]
+Here, we conducted a numerical simulation of a bridge as a moving object. The backscattering signal was modeled by dividing the bridge's surface into small plate reflectors. Subsequently, we estimated the power of the received signal by calculating the normal vector of each surface and determining its angle in relation to the radar antenna.
+Below illustrates the process of simulating a surface. Additionally, we randomly placed several corner reflectors at various locations on the bridge for strong reflections.
+<p align="center">
+ <img src="results/Scene simulation process.jpg" width=70%>
+</p>
 
+Here, you can see the resulting image. The reason for displaying the iso-range areas is that strong reflections from points at the same range to the radar could potentially impact the accuracy of displacement estimation results. Therefore, it may be optimal to deploy a corner reflector in each of these iso-range areas to ensure reliable estimations.
+<p align="center">
+ <img src="results/SLC simulations.jpg" width=70%>
+</p>
+
+The next two figures show the simulated displacement behaviours on the bridge's surface.
+<p align="center">
+ <img src="results/Displacement functions.jpg" width=70%>
+</p>
+<p align="center">
+ <img src="results/Reference displacement map.jpg" width=70%>
+</p>
+
+Now let's see some results and error analysis:
+<p align="center">
+ <img src="results/Time series results for XYZ.jpg" width=70%>
+</p>
+<p align="center">
+ <img src="results/Abstract results.jpg" width=70%>
+</p>
+<p align="center">
+ <img src="results/Histograms of displacement errors for each TS all samples together.jpg" width=70%>
+</p>
 ## Paper
 Link to the paper: 
 
