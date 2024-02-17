@@ -60,6 +60,7 @@ Now let's see some results and error analysis:
 <p align="center">
  <img src="results/Histograms of displacement errors for each TS all samples together.jpg" width=70%>
 </p>
+
 ## Paper
 Link to the paper: 
 
