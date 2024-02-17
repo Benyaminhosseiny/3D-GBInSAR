@@ -9,7 +9,6 @@
 % * run "threeD_dsplcmnt_Part2_processing.m" after running this code!
 
 
-
 clear;
 clc;
 close all
@@ -23,7 +22,7 @@ T = 60e-6; cr = bw/T;
 snr = 20;
 Nr = 256;          % Number of range samples
 Na = 101;          % Number of azimuth samples
-Ne = 11;        % Number of elevation samples
+Ne = 31;        % Number of elevation samples
 Nts= 10;           % Number of TS data
 d_az = lambda/2;
 d_el = 2*lambda/2;
@@ -73,15 +72,19 @@ Z_tar=[ 5,  3];
 % Y_tar=[25];
 % Z_tar=[ 5];
 
+figure; scatter3(Y_tar,X_tar,Z_tar); axis equal; ylim([min(X_tar)-1, max(X_tar)+1]); xlim([min(Y_tar)-1, max(Y_tar)+1]);zlim([min(Z_tar)-1, max(Z_tar)+1]); grid on
+title('Targets location'); ylabel('X (m)'); xlabel('Y (m)'); zlabel('Z (m)')
 %% Displacement per TS:
-dX_tar = [0.5e-3,  0];
-dY_tar = [-0.5e-3, 0];
-dZ_tar = [0.5e-3,  0];
+dX_tar = [1:Nts]'*[0.5e-3,  0];
+dY_tar = [1:Nts]'*[-0.5e-3, 0];
+dZ_tar = [1:Nts]'*[0.5e-3,  0];
 % dX_tar = [0.5e-3];
 % dY_tar = [-0.5e-3];
 % dZ_tar = [0.5e-3];
 
-num_tar=length(X_tar);
+A_tar = ones(size(X_tar)); % target backscattering amplitude
+
+num_tar=length(A_tar);
 
 t = linspace(0,T,Nr)'; % Pulse (sweep) time axis
 t = repmat(t, 1, Na, Ne); % shape: Nr*Na*Ne
@@ -100,9 +103,9 @@ for ts_ii = 1:Nts
     
     cube_3d_ii=0;
     for tar_ii = 1:num_tar
-        X_tarii = X_tar(tar_ii)+(ts_ii-1)*dX_tar(tar_ii);
-        Y_tarii = Y_tar(tar_ii)+(ts_ii-1)*dY_tar(tar_ii);
-        Z_tarii = Z_tar(tar_ii)+(ts_ii-1)*dZ_tar(tar_ii);
+        X_tarii = X_tar(tar_ii)+dX_tar(ts_ii, tar_ii);
+        Y_tarii = Y_tar(tar_ii)+dY_tar(ts_ii, tar_ii);
+        Z_tarii = Z_tar(tar_ii)+dZ_tar(ts_ii, tar_ii);
         
 %         % Signal Model in Polar System:
 %         R_tar_ii = R_tar(tar_ii);
@@ -118,7 +121,7 @@ for ts_ii = 1:Nts
                   ( Z_tarii-Z_rad2 ).^2 );
 
         tau = 2*( R_tar_ii )/c;   
-        cube_3d_ii = cube_3d_ii + exp( 1i*2*pi*( fc*tau + cr*t.*tau - cr*(tau.^2)/2 ) );
+        cube_3d_ii = cube_3d_ii + A_tar(tar_ii)*exp( 1i*2*pi*( fc*tau + cr*t.*tau - cr*(tau.^2)/2 ) );
     end
     cube_3dTS(:,:,:,ts_ii) = awgn( cube_3d_ii, snr );
 

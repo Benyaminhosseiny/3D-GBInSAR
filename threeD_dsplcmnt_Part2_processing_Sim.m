@@ -18,7 +18,7 @@ az_fft = 64;
 el_fft = 64;
 
 % % InSAR Processing:
-adi_thresh = 0.2;
+adi_thresh = 0.1;
 amp_thresh = 2; % dB from the max
 
 % =========================================================================
@@ -80,7 +80,9 @@ ps_mask = PS_3d(slc3dTS, adi_thresh, amp_thresh);%ps_mask(ps_mask==0)=NaN;
 
 % % % point cloud:
 point_cloud = gen_pointcloud(ps_mask(:,:,:),0);
-ps_idxr=point_cloud(:,1);ps_idxaz=point_cloud(:,2);ps_idxel=point_cloud(:,3);
+ps_idxr  = point_cloud(:,1);
+ps_idxaz = point_cloud(:,2);
+ps_idxel = point_cloud(:,3);
 
 
 for ii=1:length(ps_idxr)
@@ -182,12 +184,12 @@ subplot(2,3,6); scatter3_PC(ps_idxr,ps_idxaz,ps_idxel,ps_dZ , 'jet', 'Z Cumulati
 
 figure('Position', [20 100 1500 900]); sgtitle("Displacement through time (reference values are shown with red circles)")
 subplot(2,2,1);plot(ps_dXTS,'--^','LineWidth',1);
-hold on; scatter( [1:Nts-1], 1e3*[1:Nts-1]'*dX_tar,150,'r' ) ;xlabel('time samples');ylabel('dX [mm]')
+hold on; scatter( 1:Nts-1, 1e3*dX_tar(1:Nts-1,:),150,'r' ) ;xlabel('time samples');ylabel('dX [mm]')
 subplot(2,2,2);plot(ps_dYTS,'--^','LineWidth',1);
-hold on; scatter( [1:Nts-1], 1e3*[1:Nts-1]'*dY_tar,150,'r' ); xlabel('time samples');ylabel('dY [mm]')
+hold on; scatter( 1:Nts-1, 1e3*dY_tar(1:Nts-1,:),150,'r' ); xlabel('time samples');ylabel('dY [mm]')
 subplot(2,2,3);plot(ps_dZTS,'--^','LineWidth',1);
-hold on; scatter( [1:Nts-1], 1e3*[1:Nts-1]'*dZ_tar,150,'r' ); xlabel('time samples');ylabel('dZ [mm]')
-subplot(2,2,4);plot(ps_losTS,'--^','LineWidth',1);            xlabel('time samples');ylabel('LOS [mm]')
+hold on; scatter( 1:Nts-1, 1e3*dZ_tar(1:Nts-1,:),150,'r' ); xlabel('time samples');ylabel('dZ [mm]')
+subplot(2,2,4);plot(ps_losTS,'--^','LineWidth',1);        xlabel('time samples');ylabel('LOS [mm]')
 
 % RMSE
 if num_tar==1 % For more than 1 scatterers manual analysis is recommended!
@@ -204,6 +206,5 @@ xlim(ylimit);ylim(xlimit);zlim(zlimit)
 colormap(cmap);
 title(fig_title);
 cb=colorbar();cb.Title.String = cb_label;
-
 
 end

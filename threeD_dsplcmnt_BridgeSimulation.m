@@ -887,7 +887,7 @@ end
 %% FUNCTIONS
 %%
 function signal_TS = signal_model_TS(Amp, Ts, fs, lambda, bw, R_tar, snr)
-% [1] A_2017_Static clutter elimination for frequencyâ?modulated continuousâ?wave radar displacement
+% [1] A_2017_Static clutter elimination for frequency�?modulated continuous�?wave radar displacement
 % [2] A_2019_An Effective Accuracy Evaluation Method for LFMCW Radar Displacement Monitoring with Phasor Statistical Analysis
 
 % Amp   : Signal amplitude
