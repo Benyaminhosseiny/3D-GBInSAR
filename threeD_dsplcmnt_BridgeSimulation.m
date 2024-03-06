@@ -369,7 +369,7 @@ disp(['Number of Detected PS points: ',num2str(num_PS)])
 dR_map_ref   = 10^3*( diff(R_map_ts,1) ); % mm
 dR_map_ref   = sum(dR_map_ref,1);
 slc_ts_angle = angle(slc_ts);
-dR_map_insar = -(10^3)*wrapping_operator( diff(slc_ts_angle,1) )*lambda/4/pi; % mm
+dR_map_insar = -(10^3)*wrapToPi( diff(slc_ts_angle,1) )*lambda/4/pi; % mm
 dR_map_insar = bridge_mask.*sum(dR_map_insar,1);
 displacement_error_los_insar_map = dR_map_ref-dR_map_insar;
 disp([ "InSAR map mean displacement error (mm): ", num2str( mean(displacement_error_los_insar_map,[1,2,3]) ) ] )
@@ -494,7 +494,7 @@ rmse_angle_d_vec_dif = sqrt(mean(error_angle_d_vec_dif.^2,2)); % epochs x 1
 % % %     ax = gca;ax.YDir= 'normal'; axis('equal'); title('slc-abs (dB)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
 % % %     ax2 = subplot(4,8,[9:12]);  imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud(angle(slc1)));axis('equal'); title('slc-angle');
 % % %     ax = gca;ax.YDir= 'normal'; xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
-% % %     ax3 = subplot(4,8,[17:20]); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapping_operator(angle(slc1)-angle(slc2))*lambda/4/pi) );
+% % %     ax3 = subplot(4,8,[17:20]); imagesc(tar_BG_X/2*[-1 1],tar_BG_Z/2*[-1 1],flipud((10^3)*wrapToPi(angle(slc1)-angle(slc2))*lambda/4/pi) );
 % % %     ax = gca;ax.YDir= 'normal';axis('equal'); title('LOS displacement map (mm)'); xlabel('Azimuth (x)'); ylabel('Elevation (z)'); colorbar()
 % % %     
 % % %     linkaxes([ax1, ax2, ax3]);
